@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftUIColorNames
 
 public struct TimeZoneRegionSelector: View {
     @Environment(\.presentationMode) var presentationMode
@@ -18,7 +19,7 @@ public struct TimeZoneRegionSelector: View {
     
     @State private var selectedTimeZoneWithAbbrev:String = ""
     
-    init(_ selectedTimeZone:TimeZone?) {
+    public init(_ selectedTimeZone: Binding<TimeZone?>) {
         self._selectedTimeZone = selectedTimeZone
     }
     
@@ -108,6 +109,6 @@ struct TimeZoneDetailSelector: View {
 
 struct TimeZoneSelector_Previews: PreviewProvider {
     static var previews: some View {
-        TimeZoneRegionSelector(selectedTimeZone: .constant(TimeZone.current))
+        TimeZoneRegionSelector(.constant(TimeZone.current))
     }
 }
