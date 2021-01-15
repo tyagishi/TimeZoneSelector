@@ -86,9 +86,21 @@ public struct TimeZoneRegionSelector: View {
             }
         }
         .navigationBarTitle("select timezone")
-        .navigationBarTitleDisplayMode(.inline)
+        .modifier(BarTitleModifier())
     }
 }
+
+struct BarTitleModifier: ViewModifier {
+    typealias Body = NavigationView
+    func body(content: Content) -> some View {
+        if #available(iOS 14, *) {
+            return AnyView(content.navigationBarTitleDisplayMode(.inline))
+        } else {
+            return AnyView(content)
+        }
+    }
+}
+
 
 struct TimeZoneDetailSelector: View {
     @Binding var selectedTimeZone: TimeZone?
