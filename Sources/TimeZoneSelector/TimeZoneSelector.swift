@@ -8,6 +8,8 @@
 import SwiftUI
 import SwiftUIColorNames
 
+public typealias TZCompletion = (TimeZone) -> Void
+
 public struct TimeZoneRegionSelector: View {
     @Environment(\.presentationMode) var presentationMode
 
@@ -19,8 +21,11 @@ public struct TimeZoneRegionSelector: View {
     
     @State private var selectedTimeZoneWithAbbrev:String = ""
     
-    public init(_ selectedTimeZone: Binding<TimeZone?>) {
+    let completion:TZCompletion?
+    
+    public init(_ selectedTimeZone: Binding<TimeZone?>,_ completion:TZCompletion? = nil) {
         self._selectedTimeZone = selectedTimeZone
+        self.completion = completion
     }
     
     public var body: some View {
@@ -50,8 +55,9 @@ public struct TimeZoneRegionSelector: View {
                             .onTapGesture {
                                 if let newTimeZone = TimeZone.init(abbreviation: key) {
                                     selectedTimeZone = newTimeZone
+                                    completion?(newTimeZone)
                                 }
-                                self.presentationMode.wrappedValue.dismiss()
+                                //self.presentationMode.wrappedValue.dismiss()
                             }
                     }
                 }
@@ -68,7 +74,8 @@ public struct TimeZoneRegionSelector: View {
                                 .onTapGesture {
                                     if let selected = TimeZone.init(identifier: region) {
                                         selectedTimeZone = selected
-                                        self.presentationMode.wrappedValue.dismiss()
+                                        //self.presentationMode.wrappedValue.dismiss()
+                                        completion?(selected)
                                     }
                                 }
                         }
@@ -82,7 +89,8 @@ public struct TimeZoneRegionSelector: View {
         .onAppear {
             if localSelectedTZ != nil {
                 selectedTimeZone = localSelectedTZ
-                self.presentationMode.wrappedValue.dismiss()
+                completion?(selectedTimeZone!)
+                //self.presentationMode.wrappedValue.dismiss()
             }
         }
         .navigationBarTitle("select timezone")
