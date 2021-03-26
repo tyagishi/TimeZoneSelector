@@ -21,8 +21,8 @@ public struct TimeZoneRegionSelector: View {
     
     @State private var selectedTimeZoneWithAbbrev:String = ""
     
+    @State private var detailViewIsActive = false
     let completion:TZCompletion?
-    
     
     public init(isPresented: Binding<Bool>,_ selectedTimeZone: Binding<TimeZone?>,_ completion:TZCompletion? = nil) {
         self._isPresented = isPresented
@@ -47,7 +47,7 @@ public struct TimeZoneRegionSelector: View {
             if tzSelectionType == "identifier" {
                 List {
                     ForEach( TimeZone.regionList, id: \.self ) { region in
-                        NavigationLink(region, destination: TimeZoneDetailSelector( selectedTimeZone: $localSelectedTZ, selectedRegion: region))
+                        TimeZoneDetailNavigationLink(selectedTimeZone: $localSelectedTZ, region: region)
                     }
                 }
             } else if tzSelectionType == "abbreviation" {
@@ -76,7 +76,6 @@ public struct TimeZoneRegionSelector: View {
                                 .onTapGesture {
                                     if let selected = TimeZone.init(identifier: region) {
                                         selectedTimeZone = selected
-                                        self.presentationMode.wrappedValue.dismiss()
                                         completion?(selected)
                                         isPresented = false
                                     }
@@ -90,6 +89,7 @@ public struct TimeZoneRegionSelector: View {
         .padding()
         .background(Color.Darkturquoise)
         .onAppear {
+            // for the case returning back from TimeZoneDetailView
             if let localSelectedTZ = localSelectedTZ {
                 selectedTimeZone = localSelectedTZ
                 completion?(localSelectedTZ)
@@ -112,10 +112,25 @@ struct BarTitleModifier: ViewModifier {
     }
 }
 
+struct TimeZoneDetailNavigationLink: View {
+    @State private var detailViewIsActive = false
+    @Binding var selectedTimeZone: TimeZone?
+    let region: String
+    
+    var body: some View {
+        NavigationLink(
+            destination: TimeZoneDetailSelector(isActive: $detailViewIsActive, selectedTimeZone: $selectedTimeZone, selectedRegion: region),
+            isActive: $detailViewIsActive,
+            label: {
+                Text(region)
+            })
+    }
+}
+
 
 struct TimeZoneDetailSelector: View {
+    @Binding var isActive: Bool
     @Binding var selectedTimeZone: TimeZone?
-    @Environment(\.presentationMode) var presentationMode
     let selectedRegion: String
     var body: some View {
         List( TimeZone.regionDetailList(region: selectedRegion), id:\.self) { detail in
@@ -123,7 +138,7 @@ struct TimeZoneDetailSelector: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .onTapGesture {
                     selectedTimeZone = TimeZone.init(identifier: detail)!
-                    self.presentationMode.wrappedValue.dismiss()
+                    isActive = false
                 }
         }
         .environment(\.editMode, .constant(.active))
