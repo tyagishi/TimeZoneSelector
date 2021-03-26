@@ -12,7 +12,7 @@ public typealias TZCompletion = (TimeZone) -> Void
 
 public struct TimeZoneRegionSelector: View {
     @Environment(\.presentationMode) var presentationMode
-
+    @Binding var isPresented: Bool
     @Binding var selectedTimeZone: TimeZone?
     @State private var localSelectedTZ:TimeZone? = nil
     @State private var searchString: String = ""
@@ -23,7 +23,9 @@ public struct TimeZoneRegionSelector: View {
     
     let completion:TZCompletion?
     
-    public init(_ selectedTimeZone: Binding<TimeZone?>,_ completion:TZCompletion? = nil) {
+    
+    public init(isPresented: Binding<Bool>,_ selectedTimeZone: Binding<TimeZone?>,_ completion:TZCompletion? = nil) {
+        self._isPresented = isPresented
         self._selectedTimeZone = selectedTimeZone
         self.completion = completion
     }
@@ -56,8 +58,8 @@ public struct TimeZoneRegionSelector: View {
                                 if let newTimeZone = TimeZone.init(abbreviation: key) {
                                     selectedTimeZone = newTimeZone
                                     completion?(newTimeZone)
+                                    isPresented = false
                                 }
-                                self.presentationMode.wrappedValue.dismiss()
                             }
                     }
                 }
@@ -76,6 +78,7 @@ public struct TimeZoneRegionSelector: View {
                                         selectedTimeZone = selected
                                         self.presentationMode.wrappedValue.dismiss()
                                         completion?(selected)
+                                        isPresented = false
                                     }
                                 }
                         }
@@ -87,10 +90,10 @@ public struct TimeZoneRegionSelector: View {
         .padding()
         .background(Color.Darkturquoise)
         .onAppear {
-            if localSelectedTZ != nil {
+            if let localSelectedTZ = localSelectedTZ {
                 selectedTimeZone = localSelectedTZ
-                completion?(selectedTimeZone!)
-                self.presentationMode.wrappedValue.dismiss()
+                completion?(localSelectedTZ)
+                isPresented = false
             }
         }
         .navigationBarTitle("select timezone")
@@ -129,6 +132,6 @@ struct TimeZoneDetailSelector: View {
 
 struct TimeZoneSelector_Previews: PreviewProvider {
     static var previews: some View {
-        TimeZoneRegionSelector(.constant(TimeZone.current))
+        TimeZoneRegionSelector(isPresented: .constant(true), .constant(TimeZone.current))
     }
 }
