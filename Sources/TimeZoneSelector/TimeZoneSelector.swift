@@ -57,7 +57,7 @@ public struct TimeZoneRegionSelector: View {
                                     selectedTimeZone = newTimeZone
                                     completion?(newTimeZone)
                                 }
-                                //self.presentationMode.wrappedValue.dismiss()
+                                self.presentationMode.wrappedValue.dismiss()
                             }
                     }
                 }
@@ -74,7 +74,7 @@ public struct TimeZoneRegionSelector: View {
                                 .onTapGesture {
                                     if let selected = TimeZone.init(identifier: region) {
                                         selectedTimeZone = selected
-                                        //self.presentationMode.wrappedValue.dismiss()
+                                        self.presentationMode.wrappedValue.dismiss()
                                         completion?(selected)
                                     }
                                 }
@@ -90,7 +90,7 @@ public struct TimeZoneRegionSelector: View {
             if localSelectedTZ != nil {
                 selectedTimeZone = localSelectedTZ
                 completion?(selectedTimeZone!)
-                //self.presentationMode.wrappedValue.dismiss()
+                self.presentationMode.wrappedValue.dismiss()
             }
         }
         .navigationBarTitle("select timezone")
